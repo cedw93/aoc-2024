@@ -10,10 +10,19 @@ import (
 	"time"
 )
 
+const (
+	opPattern          = `mul\((\d+),(\d+)\)`
+	instructionPattern = `(?:^|do)[^d]*`
+)
+
 var lines []string
+var opRe *regexp.Regexp
+var instructionRe *regexp.Regexp
 
 func init() {
 	scanner := bufio.NewScanner(os.Stdin)
+	opRe = regexp.MustCompile(opPattern)
+	instructionRe = regexp.MustCompile(instructionPattern)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
@@ -26,8 +35,6 @@ func aToIIgnoreError(s string) int {
 
 func partOne() int {
 	result := 0
-	opPattern := `mul\((\d+),(\d+)\)`
-	opRe := regexp.MustCompile(opPattern)
 	// instructionPattern := `do([^d]*)`
 	// instructionRe := regexp.MustCompile(instructionPattern)
 	for _, line := range lines {
@@ -41,10 +48,6 @@ func partOne() int {
 
 func partTwo() int {
 	result := 0
-	opPattern := `mul\((\d+),(\d+)\)`
-	opRe := regexp.MustCompile(opPattern)
-	instructionPattern := `(?:^|do)[^d]*`
-	instructionRe := regexp.MustCompile(instructionPattern)
 	ignore := false
 	for _, line := range lines {
 		instructionMatches := instructionRe.FindAllStringSubmatch(line, -1)
