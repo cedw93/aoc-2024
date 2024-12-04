@@ -68,7 +68,7 @@ func calcWordsFromX(row, col int) int {
 				break
 			}
 
-			// prevents partial matches on line ends triggering issue only increment when full match found
+			// prevents partial matches on line ends triggering issue.
 			if i == 3 {
 				wordsFound += 1
 			}
