@@ -92,7 +92,7 @@ func isXPattern(row, col int) bool {
 		// ensuring they are in the correct pairing is handled using the mappings already
 		// We just care than any pairing is M and S since we only check this when we are on an A
 		// If this pair doesn't match then no point checking the other
-		if pairSum != 'M'+'S' {
+		if pairSum != int(xmas[1])+int(xmas[3]) {
 			return false
 		}
 	}
