@@ -15,6 +15,12 @@ type pageRule struct {
 	rawText string
 }
 
+type node struct {
+	pageNumber int
+	children   []int
+	inEdges    int
+}
+
 var pageRules []pageRule
 var updates [][]int
 
@@ -81,13 +87,23 @@ func middlePage(instructions []int) int {
 	return instructions[len(instructions)/2]
 }
 
-func createdDirectedGraph(instructions []int, rules []pageRule) (map[int][]int, map[int]int) {
-	graph := make(map[int][]int, len(instructions))
-	inEdges := make(map[int]int, len(instructions))
+func (n *node) addChild(p int) {
+	n.children = append(n.children, p)
+}
 
-	for _, pageNum := range instructions {
-		graph[pageNum] = []int{}
-		inEdges[pageNum] = 0
+func createdDirectedGraph(instructions []int, rules []pageRule) map[int]*node {
+
+	// graph := make(map[int][]int, len(instructions))
+	graph := make(map[int]*node, len(instructions))
+	// inEdges := make(map[int]int, len(instructions))
+
+	// init blank graph
+	for _, pn := range instructions {
+		graph[pn] = &node{
+			pageNumber: pn,
+			children:   []int{},
+			inEdges:    0,
+		}
 	}
 
 	// graph[k] should be an int slice containing the elements that must appear after k based on the rules provided
@@ -100,23 +116,23 @@ func createdDirectedGraph(instructions []int, rules []pageRule) (map[int][]int, 
 		// if can be applied to the ruleset, A|B where A and B both in instructions
 		if ruleApplicable(instructions, r) {
 			// rule is applicable so we need to track that B must come after A
-			graph[r.left] = append(graph[r.left], r.right)
 			// We also track that B has an extra in edge, so one extra instruction needs to be before it
-			inEdges[r.right] += 1
+			graph[r.left].addChild(r.right)
+			graph[r.right].inEdges++
 		}
 	}
 
-	return graph, inEdges
+	return graph
 }
 
 func fixInstructionOrder(instructions []int, rules []pageRule) []int {
-	graph, inEdges := createdDirectedGraph(instructions, rules)
-	toProcess := []int{}
+	graph := createdDirectedGraph(instructions, rules)
+	toProcess := []*node{}
 	correctedResult := []int{}
 
-	for pageNumber, numInEdges := range inEdges {
-		if numInEdges == 0 {
-			toProcess = append(toProcess, pageNumber)
+	for _, node := range graph {
+		if node.inEdges == 0 {
+			toProcess = append(toProcess, node)
 		}
 	}
 
@@ -126,13 +142,13 @@ func fixInstructionOrder(instructions []int, rules []pageRule) []int {
 		next := toProcess[0]
 		toProcess = toProcess[1:]
 		// first will have no remaining in egdes to care about
-		correctedResult = append(correctedResult, next)
+		correctedResult = append(correctedResult, next.pageNumber)
 		// If graph[next] has no candidates its just added to the result on next iter
-		for _, candidatePage := range graph[next] {
+		for _, candidatePage := range next.children {
 			// remove one for each edge in the inEdge[candidatePage], if its 0 it must be next element
-			inEdges[candidatePage] -= 1
-			if inEdges[candidatePage] == 0 {
-				toProcess = append(toProcess, candidatePage)
+			graph[candidatePage].inEdges--
+			if graph[candidatePage].inEdges == 0 {
+				toProcess = append(toProcess, graph[candidatePage])
 			}
 		}
 	}
