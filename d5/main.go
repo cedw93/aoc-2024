@@ -34,7 +34,7 @@ func init() {
 			if len(line) < 1 {
 				continue
 			}
-			result := make([]int, 0, len(line))
+			result := []int{}
 			for _, page := range strings.Split(line, ",") {
 				result = append(result, aToIIgnoreError(page))
 			}
@@ -83,7 +83,7 @@ func middlePage(instructions []int) int {
 
 func createdDirectedGraph(instructions []int, rules []pageRule) (map[int][]int, map[int]int) {
 	graph := make(map[int][]int, len(instructions))
-	inEdges := make(map[int]int)
+	inEdges := make(map[int]int, len(instructions))
 
 	for _, pageNum := range instructions {
 		graph[pageNum] = []int{}
