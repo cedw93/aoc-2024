@@ -21,6 +21,15 @@ type node struct {
 	inEdges    int
 }
 
+func (n *node) addChild(p int) {
+	n.children = append(n.children, p)
+}
+
+func (n *node) print() {
+	fmt.Printf("graph[%d].children -> %v\n", n.pageNumber, n.children)
+	fmt.Printf("graph[%d].inEdges -> %d\n", n.pageNumber, n.inEdges)
+}
+
 var pageRules []pageRule
 var updates [][]int
 
@@ -87,15 +96,6 @@ func middlePage(instructions []int) int {
 	return instructions[len(instructions)/2]
 }
 
-func (n *node) addChild(p int) {
-	n.children = append(n.children, p)
-}
-
-func (n *node) print() {
-	fmt.Printf("graph[%d].children -> %v\n", n.pageNumber, n.children)
-	fmt.Printf("graph[%d].inEdges -> %d\n", n.pageNumber, n.inEdges)
-}
-
 func printGraph(graph map[int]*node) {
 	for _, v := range graph {
 		v.print()
@@ -103,10 +103,7 @@ func printGraph(graph map[int]*node) {
 }
 
 func createdDirectedGraph(instructions []int, rules []pageRule) map[int]*node {
-
-	// graph := make(map[int][]int, len(instructions))
 	graph := make(map[int]*node, len(instructions))
-	// inEdges := make(map[int]int, len(instructions))
 
 	// init blank graph
 	for _, pn := range instructions {
