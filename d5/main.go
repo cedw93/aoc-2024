@@ -137,6 +137,7 @@ func fixInstructionOrder(instructions []int, rules []pageRule) []int {
 		toProcess = toProcess[1:]
 		// first will have no remaining in egdes to care about
 		correctedResult = append(correctedResult, next)
+		// If graph[next] has no candidates its just added to the result on next iter
 		for _, candidatePage := range graph[next] {
 			// remove one for each edge in the inEdge[candidatePage], if its 0 it must be next element
 			inEdges[candidatePage] -= 1
