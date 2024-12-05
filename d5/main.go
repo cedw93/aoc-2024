@@ -97,8 +97,11 @@ func createdDirectedGraph(instructions []int, rules []pageRule) (map[int][]int, 
 	// inEdges[61] -> 0
 	// if final result should be [61,29,13]
 	for _, r := range rules {
+		// if can be applied to the ruleset, A|B where A and B both in instructions
 		if ruleApplicable(instructions, r) {
+			// rule is applicable so we need to track that B must come after A
 			graph[r.left] = append(graph[r.left], r.right)
+			// We also track that B has an extra in edge, so one extra instruction needs to be before it
 			inEdges[r.right] += 1
 		}
 	}
