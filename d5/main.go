@@ -109,16 +109,6 @@ func createdDirectedGraph(instructions []int, rules []pageRule) (map[int][]int, 
 	return graph, inEdges
 }
 
-func partOne() int {
-	result := 0
-	for _, u := range updates {
-		if instructionsInOrder(u, pageRules) {
-			result += middlePage(u)
-		}
-	}
-	return result
-}
-
 func fixInstructionOrder(instructions []int, rules []pageRule) []int {
 	graph, inEdges := createdDirectedGraph(instructions, rules)
 	toProcess := []int{}
@@ -150,6 +140,23 @@ func fixInstructionOrder(instructions []int, rules []pageRule) []int {
 	return correctedResult
 }
 
+func timer() func() {
+	start := time.Now()
+	return func() {
+		fmt.Printf("took %v\n", time.Since(start))
+	}
+}
+
+func partOne() int {
+	result := 0
+	for _, u := range updates {
+		if instructionsInOrder(u, pageRules) {
+			result += middlePage(u)
+		}
+	}
+	return result
+}
+
 func partTwo() int {
 	result := 0
 	for _, u := range updates {
@@ -159,13 +166,6 @@ func partTwo() int {
 		}
 	}
 	return result
-}
-
-func timer() func() {
-	start := time.Now()
-	return func() {
-		fmt.Printf("took %v\n", time.Since(start))
-	}
 }
 
 func main() {
