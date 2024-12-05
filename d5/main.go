@@ -91,6 +91,17 @@ func (n *node) addChild(p int) {
 	n.children = append(n.children, p)
 }
 
+func (n *node) print() {
+	fmt.Printf("graph[%d].children -> %v\n", n.pageNumber, n.children)
+	fmt.Printf("graph[%d].inEdges -> %d\n", n.pageNumber, n.inEdges)
+}
+
+func printGraph(graph map[int]*node) {
+	for _, v := range graph {
+		v.print()
+	}
+}
+
 func createdDirectedGraph(instructions []int, rules []pageRule) map[int]*node {
 
 	// graph := make(map[int][]int, len(instructions))
@@ -106,11 +117,16 @@ func createdDirectedGraph(instructions []int, rules []pageRule) map[int]*node {
 		}
 	}
 
-	// graph[k] should be an int slice containing the elements that must appear after k based on the rules provided
-	// inEdges[k] is how many elements must exist before k
+	// graph[k].children should be an int slice containing the elements that must appear after k based on the rules provided
+	// graph[k].inEdges is how many elements must exist before k
 	// example:
-	// graph[61] -> [13,29]
-	// inEdges[61] -> 0
+	// instructions: [61,13,29] and assume rules state 61 -> 29 -> 13
+	// graph[61].children -> [13 29]
+	// graph[61].inEdges -> 0
+	// graph[13].children -> []
+	// graph[13].inEdges -> 2
+	// graph[29].children -> [13]
+	// graph[29].inEdges -> 1
 	// if final result should be [61,29,13]
 	for _, r := range rules {
 		// if can be applied to the ruleset, A|B where A and B both in instructions
@@ -147,6 +163,8 @@ func fixInstructionOrder(instructions []int, rules []pageRule) []int {
 		for _, candidatePage := range next.children {
 			// remove one for each edge in the inEdge[candidatePage], if its 0 it must be next element
 			graph[candidatePage].inEdges--
+			// if inEdges is 0 then it means candidatePage is safe to append as it does not need to come after any other page
+			// if its > 0 then theres still more pages before it so it'll get processed late
 			if graph[candidatePage].inEdges == 0 {
 				toProcess = append(toProcess, graph[candidatePage])
 			}
