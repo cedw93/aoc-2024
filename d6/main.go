@@ -195,8 +195,8 @@ func partTwo() int {
 	result := 0
 
 	// Horrendously slow brute force approach
-	// for event [row][col] in the grid, replace with an obstacle if its a previously safe space
-	// then have the guard perform its rooting on that new grid pattern
+	// for every [row][col] in the grid, replace with an obstacle if it's currently a safe space
+	// then have the guard perform its routing on that new grid pattern
 	// guards detect if they are in a loop already, otherwise same rules as part
 	for rIdx, row := range grid {
 		for cIdx := range row {
