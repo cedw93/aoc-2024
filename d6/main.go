@@ -38,13 +38,7 @@ func init() {
 	scanner := bufio.NewScanner(os.Stdin)
 	count := 0
 	for scanner.Scan() {
-		line := scanner.Text()
-		row := []rune{}
-		for _, r := range line {
-			row = append(row, r)
-		}
-
-		grid = append(grid, row)
+		grid = append(grid, []rune(scanner.Text()))
 		count++
 	}
 }
