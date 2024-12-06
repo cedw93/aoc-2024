@@ -163,11 +163,13 @@ func onGrid(row, col int, g [][]rune) bool {
 	return row > -1 && col > -1 && row < len(g) && col < len(g[row])
 }
 
-func partOne() int {
+func partOne() ([][]bool, int) {
 	g := findGuard(grid)
 	// were still on the board and we are not looping
 	for g.onGrid && !g.inLoop {
-		//dont actually move just based on direction facing get the next row, col indexes
+		// don't actually move just based on direction facing get the next row, col indexes
+		// This could be way more efficient as one we are in a direction we can skip ahead until end or object
+		// you don't need to check every tile, but this is the most simple approach with less edge cases and input is small enough for it not to be that bad
 		nextRow, nextCol := g.nextMoveLocation()
 
 		// is the move outside the grid?
@@ -188,19 +190,22 @@ func partOne() int {
 		g.move(nextRow, nextCol)
 	}
 
-	return g.numPositionsVisited
+	return g.visited, g.numPositionsVisited
 }
 
-func partTwo() int {
+func partTwo(partOneVisited [][]bool) int {
 	result := 0
 
 	// Horrendously slow brute force approach
 	// for every [row][col] in the grid, replace with an obstacle if it's currently a safe space
 	// then have the guard perform its routing on that new grid pattern
 	// guards detect if they are in a loop already, otherwise same rules as part
+
 	for rIdx, row := range grid {
 		for cIdx := range row {
-			if grid[rIdx][cIdx] == SAFE_SPACE {
+			// We only need check tiles that we know are on the valid path which was found in part 1
+			// otherwise no point adding an obstacle somewhere the guard never walks!
+			if partOneVisited[rIdx][cIdx] && grid[rIdx][cIdx] == SAFE_SPACE {
 				grid[rIdx][cIdx] = OBSTACLE_RUNE
 				g := findGuard(grid)
 				for g.onGrid {
@@ -234,6 +239,7 @@ func partTwo() int {
 
 func main() {
 	defer timer()()
-	fmt.Println("Part One:", partOne())
-	fmt.Println("Part Two:", partTwo())
+	visited, distinctNodes := partOne()
+	fmt.Println("Part One:", distinctNodes)
+	fmt.Println("Part Two:", partTwo(visited))
 }
