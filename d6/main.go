@@ -196,11 +196,9 @@ func partOne() ([][]bool, int) {
 func partTwo(partOneVisited [][]bool) int {
 	result := 0
 
-	// Horrendously slow brute force approach
 	// for every [row][col] in the grid, replace with an obstacle if it's currently a safe space
 	// then have the guard perform its routing on that new grid pattern
 	// guards detect if they are in a loop already, otherwise same rules as part
-
 	for rIdx, row := range grid {
 		for cIdx := range row {
 			// We only need check tiles that we know are on the valid path which was found in part 1
