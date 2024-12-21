@@ -243,6 +243,14 @@ func goodCheats(cheatSize, minimumSaving int) int {
 			// so 12 + 58 + 2 = 72, this means that taking this cheat has a path of 72
 			// this saves lengthOfBest - 72 = 12, which is greater than minimumSaving so this is a good cheat!
 			// We NEVER need to do path finding again
+
+			// We also don't need to check if we are at a cheat location, we could to save some cycles but input isn't big enough for the effort
+			// if we are not at a cheat then path length will be the same as the knownBest as we haven't changed our path
+			// example node = [0][3] cost 6
+			// example candidate = [0][5] cost 8
+			// lengthOfBest = 84
+			// delta = 2
+			// 6 + 2 + 76 = 84 so it's not a cheat
 			delta := manhattanDist(node.y, candidate.y, node.x, candidate.x)
 			if delta <= cheatSize {
 				distFromEnd := lengthOfBest - candidate.actualCost
