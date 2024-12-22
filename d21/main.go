@@ -216,6 +216,10 @@ func (cs *codeSequence) calcSequence(seq string, numberRobots int) int {
 	for _, character := range seq {
 		charAsString := string(character)
 		paths := numberPanel.shortestPaths(currentlyAt, charAsString)
+		// it's possible paths can return multiple paths of the same length
+		// e.g. [^^>A, v>^A ]
+		// so for each of these we need to check the cost of actually doing this, recursively for all robots in the chain
+		// for example, it might be faster for robot 1 but much slower for robot 1+X so we get the minimum length
 		possibleOptions := []int{}
 		for _, subSequence := range paths {
 			possibleOptions = append(possibleOptions, minLengthOpDirPanel(subSequence, numberRobots))
