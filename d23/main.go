@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -37,29 +36,14 @@ func init() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		parts := strings.Split(scanner.Text(), "-")
+		network.addEdge(parts[0], parts[1])
 		left := parts[0]
 		right := parts[1]
 		pairs = append(pairs, connectionPair{
 			left:  left,
 			right: right,
 		})
-
-		if _, seen := network.edges[left]; !seen {
-			network.edges[left] = make(node)
-			totalComputers++
-		}
-
-		if _, seen := network.edges[right]; !seen {
-			network.edges[right] = make(node)
-			totalComputers++
-		}
 	}
-
-	for _, pair := range pairs {
-		network.edges[pair.left][pair.right] = struct{}{}
-		network.edges[pair.right][pair.left] = struct{}{}
-	}
-
 	foundCliques = network.findCliques()
 }
 
@@ -100,12 +84,10 @@ func (g graph) findCliques() [][]string {
 func bronKerbosch(currentClique, candidateNodes, excludedNodes node, graph graph, cliques *[][]string) {
 	if len(candidateNodes) == 0 && len(excludedNodes) == 0 {
 		// If we get to hear this clique has been fully explored so we
-		// sort it, save it and track it for later
 		clique := []string{}
 		for node := range currentClique {
 			clique = append(clique, node)
 		}
-		sort.Strings(clique)
 		*cliques = append(*cliques, clique)
 		return
 	}
@@ -183,6 +165,15 @@ func partOne() int {
 			for grandChild := range network.edges[child] {
 				for greatGrandChild := range network.edges[grandChild] {
 					if greatGrandChild == parent {
+						// Uses a hash key based on the sorted order because
+						// a,b,c
+						// a,c,b
+						// b,c,a
+						// etc are all the same triangle of nodes and we don't want to double count. Sorted key for each would be
+						// a,b,c => a,b,c
+						// a,c,b => a,b,c
+						// b,c,a => a,b,c
+						// Not super effcient doing this, there's likely a better way but it works for now,
 						triplet := sortedKey(parent, child, grandChild)
 						if _, seen := tripletCache[triplet]; !seen {
 							tripletCache[triplet] = struct{}{}
@@ -215,8 +206,7 @@ func partTwo() string {
 		}
 	}
 
-	slices.Sort(largestNetwork)
-
+	sort.Strings(largestNetwork)
 	return strings.Join(largestNetwork, ",")
 }
 
