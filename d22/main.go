@@ -94,6 +94,7 @@ func partTwo() int {
 				// key is a 'run' of 4 deltas to a value since we care about
 				// basically means this secret results in a gain/loss of this many bananas
 				key := [4]int(deltas[i-3 : i+1])
+				// We only want the first time we see such seq
 				if _, ok := changeSeq[key]; !ok {
 					changeSeq[key] = newPrice
 				}
